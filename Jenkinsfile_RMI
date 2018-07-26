@@ -1,0 +1,18 @@
+#!groovy
+
+properties(
+    [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/RMI.git'],
+     pipelineTriggers([[$class: 'GitHubPushTrigger']])]
+)
+
+@Library('Infrastructure')
+
+def type = "java"
+
+def product = "rmi"
+
+def component = "batch"
+
+#withPipeline(type, product, component) {
+ #enablePerformanceTest()
+#}

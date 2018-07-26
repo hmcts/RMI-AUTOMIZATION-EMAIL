@@ -1,0 +1,147 @@
+plugins {
+  id 'application'
+  id 'checkstyle'
+  id 'pmd'
+  id 'jacoco'
+  id 'io.spring.dependency-management' version '1.0.5.RELEASE'
+  id 'org.springframework.boot' version '2.0.3.RELEASE'
+  id 'org.owasp.dependencycheck' version '3.2.1'
+  id 'com.github.ben-manes.versions' version '0.20.0'
+}
+
+group = 'uk.gov.hmcts.rmi'
+version = '0.0.1'
+def springBootVersion = '2.0.2.RELEASE'
+def postgresVersion = '2.0.2.RELEASE'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+  functionalTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/test/java')
+    }
+    resources.srcDir file('src/test/java')
+  }
+
+  integrationTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/test/java')
+    }
+    resources.srcDir file('src/test/java')
+  }
+
+  smokeTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/test/java')
+    }
+    resources.srcDir file('src/test/java')
+  }
+}
+
+tasks.withType(JavaCompile) {
+  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+}
+
+task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
+}
+
+task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+
+  // set your environment variables here
+  // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+task smoke(type: Test) {
+  description = "Runs Smoke Tests"
+  testClassesDirs = sourceSets.smokeTest.output.classesDirs
+  classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+checkstyle {
+  maxWarnings = 0
+  toolVersion = '8.10.1'
+  // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
+  configDir = new File(rootDir, 'config/checkstyle')
+}
+
+pmd {
+  toolVersion = "6.5.0"
+  ignoreFailures = true
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
+  reportsDir = file("$project.buildDir/reports/pmd")
+  ruleSetFiles = files("config/pmd/ruleset.xml")
+}
+
+jacocoTestReport {
+  executionData(test, integration)
+  reports {
+    xml.enabled = true
+    csv.enabled = false
+    xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+  }
+}
+
+dependencyUpdates.resolutionStrategy = {
+  componentSelection { rules ->
+    rules.all { ComponentSelection selection ->
+      boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+        selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+      }
+      if (rejected) {
+        selection.reject('Release candidate')
+      }
+    }
+  }
+}
+
+// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
+dependencyCheck {
+  // Specifies if the build should be failed if a CVSS score above a specified level is identified.
+  // range of 0-10 fails the build, anything greater and it doesn't fail the build
+  failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
+  suppressionFile = 'config/owasp/suppressions.xml'
+}
+
+repositories {
+  jcenter()
+}
+
+// it is important to specify logback classic and core packages explicitly as libraries like spring boot
+// enforces it's own (older) version which is not recommended.
+def versions = [
+  reformLogging: '3.0.1',
+  springBoot: springBoot.class.package.implementationVersion,
+  springHystrix: '2.0.0.RELEASE',
+  springfoxSwagger: '2.9.2'
+]
+
+dependencies {       
+		compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
+		compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: versions.springBoot       
+		compile group: 'org.postgresql' , name: 'postgresql', version: '42.2.2' 
+		compile "uk.gov.service.notify:notifications-java-client:3.9.2-RELEASE"
+		testCompile "junit:junit:4.12"
+		testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+}
+
+mainClassName = 'uk.gov.hmcts.reform.rmi.RmiAutomizationApplication'
+                 
+bootJar {
+  archiveName = 'rmi-automization.jar'
+
+  manifest {
+    attributes('Implementation-Version': project.version.toString())
+  }
+}
