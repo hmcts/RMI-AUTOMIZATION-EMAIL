@@ -33,7 +33,7 @@ public class CardPaymentFileProcessorTask {
 	private EmailAutomizationServiceImpl emailAutomizationService;
 	
 	
-	@Scheduled(cron = "0 0 14 * * ?", zone="Europe/London")
+	@Scheduled(cron = "0 30 10 * * ?", zone="Europe/London")
 	public void processCardPaymentFile() {
 			
 		String fileName = findfileInContainer.retunFileName("hmcts_card_payments");
