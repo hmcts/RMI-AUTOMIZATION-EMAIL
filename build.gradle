@@ -9,7 +9,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
-group = 'uk.gov.hmcts.rmi'
+group = 'uk.gov.hmcts.reform.rmi'
 version = '0.0.1'
 def springBootVersion = '2.0.2.RELEASE'
 def postgresVersion = '2.0.2.RELEASE'
@@ -131,15 +131,15 @@ dependencies {
 		compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
 		compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: versions.springBoot       
 		compile group: 'org.postgresql' , name: 'postgresql', version: '42.2.2' 
-		compile "uk.gov.service.notify:notifications-java-client:3.9.2-RELEASE"
+		compile group: 'com.microsoft.azure' , name: 'azure-storage', version: '5.0.0' 
 		testCompile "junit:junit:4.12"
 		testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 }
 
-mainClassName = 'uk.gov.hmcts.reform.rmi.RmiAutomizationApplication'
+mainClassName = 'uk.gov.hmcts.reform.rmi.EmailAttachmentAutomizationApp'
                  
 bootJar {
-  archiveName = 'rmi-automization.jar'
+  archiveName = 'rmi-automization-email.jar'
 
   manifest {
     attributes('Implementation-Version': project.version.toString())

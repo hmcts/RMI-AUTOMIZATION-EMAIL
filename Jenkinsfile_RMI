@@ -1,7 +1,7 @@
 #!groovy
 
 properties(
-    [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/RMI.git'],
+    [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/RMI-AUTOMIZATION-EMAIL.git'],
      pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
 
@@ -9,7 +9,7 @@ properties(
 
 def type = "java"
 
-def product = "rmi"
+def product = "rmi-email"
 
 def component = "batch"
 

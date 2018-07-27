@@ -1,6 +1,6 @@
 variable "product" {
   type    = "string"
-  default = "rmi"
+  default = "rmi-email"
 }
 
 variable "component" {

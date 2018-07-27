@@ -4,13 +4,13 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>uk.gov.hmcts.rmi</groupId>
-	<artifactId>rmi-automization</artifactId>
+	<groupId>uk.gov.hmcts.reform.rmi</groupId>
+	<artifactId>rmi-automization-email</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>NotifyServiceAutomation</name>
-	<description>Will automate the service</description>
+	<name>RMI Automization Email</name>
+	<description>Operational Reportiing Email Automization</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -38,17 +38,21 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency> 
-        
         <dependency>
-  			<groupId>uk.gov.service.notify</groupId>
-  			<artifactId>notifications-java-client</artifactId>
-  			<version>3.9.2-RELEASE</version> 		
- 		</dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>                
  		<dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
                 <scope>test</scope>
+		</dependency>
+		<dependency>
+    			<groupId>com.microsoft.azure</groupId>
+    			<artifactId>azure-storage</artifactId>
+    			<version>5.0.0</version>
 		</dependency>
  		<dependency>
     			<groupId>org.springframework.boot</groupId>

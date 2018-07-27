@@ -1,2 +1,2 @@
 # RMI
-Report MI Repository
+Report MI Operation Reporting Automization email Repository
