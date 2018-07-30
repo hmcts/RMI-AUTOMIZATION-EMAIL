@@ -74,9 +74,6 @@ public class EmailAutomizationDAO implements EmailAutomizationDAOImpl {
 			
 		  });
 		  logger.info("EmailAutomizationDAO::cardPaymentFileProcessor::End"); 
-		}
-	
-	
-	
+		}	
 	
 }
