@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.ListBlobItem;
+import com.microsoft.azure.storage.file.FileInputStream;
 
 import uk.gov.hmcts.reform.rmi.properties.ApplicationProperties;
 
@@ -71,10 +73,11 @@ public class FindFileInContainer {
 				CloudBlobClient blobClient = storageAccount.createCloudBlobClient(); // Creating the client for Blob Storage
 				CloudBlobContainer container = blobClient.getContainerReference("attachments"); //Finding the container
 				
-				for (ListBlobItem blobItem : container.listBlobs()) {
-			        
+				for (ListBlobItem blobItem : container.listBlobs()) {			       
 			    	if(blobItem.getUri().toString().contains(findString)){			    		
-			    		fineNameReturn = blobItem.getUri().toString().substring(blobItem.getUri().toString().indexOf(findString));			    		
+			    		//fineNameReturn = blobItem.getUri().toString().substring(blobItem.getUri().toString().lastIndexOf("/")+1);	
+			    		fineNameReturn  = blobItem.getUri().toString();
+			    		return fineNameReturn;
 			    	}else{
 			    		fineNameReturn = "NOT_FOUND";
 			    	}
@@ -91,4 +94,27 @@ public class FindFileInContainer {
 		
 		return fineNameReturn;
 	}
+	
+	@SuppressWarnings("unused")
+	public void deleteFile(String fileName) {
+		
+		try {
+				
+				CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString); //Finding the Storage Container
+				CloudBlobClient blobClient = storageAccount.createCloudBlobClient(); // Creating the client for Blob Storage
+				CloudBlobContainer container = blobClient.getContainerReference("attachments"); //Finding the container
+				
+				CloudBlob cloudBlob = container.getBlockBlobReference(fileName);
+				cloudBlob.delete();
+				
+		}catch(InvalidKeyException e) {
+			logger.error("Invalid Key For connecting azure storage account: " + e);
+		}catch(URISyntaxException e) {
+			logger.error("Invalid URL formed: " + e);		
+		}catch(StorageException e) {
+			logger.error("Some problem found in azure storage account while deleting the file: " + e);
+		}		
+
+	}
+	
 }
